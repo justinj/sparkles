@@ -13,8 +13,8 @@ Use
   (require sparkles.core :as sparkles))
 
 (def red (sparkles/color {:fg :red}))
-(def underlined-blue (sparkles/color {:bg :blue
-                           :styles [:underline]}))
+(def underlined-blue (sparkles/color {:bg     :blue
+                                      :styles [:underline]}))
 
 (println (red "This is red..."))
 (println (underlined-blue "This is underlined with a blue background."))
