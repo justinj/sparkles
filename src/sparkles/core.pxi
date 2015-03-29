@@ -1,6 +1,7 @@
 (ns sparkles.core)
 
 (def style-codes
+  ^{:private true}
   {:reset     0
    :bold      1
    :faint     2
@@ -10,6 +11,7 @@
    :hidden    8})
 
 (def fg-color-codes
+  ^{:private true}
   {:black   30
    :red     31
    :green   32
@@ -20,6 +22,7 @@
    :white   37})
 
 (def bg-color-codes
+  ^{:private true}
   {:black   40
    :red     41
    :green   42
