@@ -1,12 +1,11 @@
 Sparkles
 ========
 
-Sparkles is a library for formatting text in a terminal.
+A library for formatting text in a terminal.
+Only color for now.
 
-Right now only color is supported, but conceivably more complicated formatting could exist.
-
-Use
-===
+Usage
+=====
 
 ```clojure
 (ns foo.bar
