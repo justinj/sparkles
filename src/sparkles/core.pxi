@@ -40,7 +40,7 @@
   (-repr [this] (str this))
   (-str [this] (apply str (map formatter contents))))
 
-(defn get-codes [from codes key]
+(defn- get-codes [from codes key]
   (let [codes (if (satisfies? ISeqable codes) codes [codes])]
   (filter identity
           (map #(let [value (from %)]
@@ -49,7 +49,7 @@
                     value))
                codes))))
 
-(defn formatter [formatting]
+(defn color [formatting]
   (let [{:keys [fg bg styles]} formatting
         fg-codes    (get-codes fg-color-codes [fg] :fg)
         bg-codes    (get-codes bg-color-codes [bg] :bg)

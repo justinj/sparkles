@@ -18,30 +18,30 @@
 (def esc (char 27))
 
 (t/deftest explicit
-  (let [red-fg (formatter {:fg :red})]
+  (let [red-fg (color {:fg :red})]
     (t/assert= (seq (red-fg "foo"))
               [esc \[ \3 \1 \m \f \o \o esc \[ \0 \m])))
 
 (t/deftest single
-  (let [red-fg (formatter {:fg :red})]
+  (let [red-fg (color {:fg :red})]
     (t/assert= (get-escape-codes (red-fg "foo"))
                #{31}))
-  (let [blue-fg (formatter {:fg :blue})]
+  (let [blue-fg (color {:fg :blue})]
     (t/assert= (get-escape-codes (blue-fg "foo"))
                #{34}))
-  (let [blue-bg (formatter {:bg :blue})]
+  (let [blue-bg (color {:bg :blue})]
     (t/assert= (get-escape-codes (blue-bg "foo"))
                #{44})))
 
 (t/deftest multiple-codes
-  (let [fancy (formatter {:fg :red
+  (let [fancy (color {:fg :red
                           :bg :blue})]
     (t/assert= (get-escape-codes (fancy "foo")) #{31 44})))
 
 (t/deftest styles
-  (let [underline (formatter {:styles [:underline]})]
+  (let [underline (color {:styles [:underline]})]
     (t/assert= (get-escape-codes (underline "foo")) #{4}))
-  (let [underline-inverse (formatter {:styles [:underline :inverse]})]
+  (let [underline-inverse (color {:styles [:underline :inverse]})]
     (t/assert= (get-escape-codes (underline-inverse "foo")) #{4 7})))
 
 (defn parse-elem [elem]
@@ -58,17 +58,17 @@
     (map parse-elem (rest sections))))
 
 (t/deftest concatenates-strs
-  (let [red (formatter {:fg :red})]
+  (let [red (color {:fg :red})]
     (t/assert= (parse (red "foo" "bar"))
                [[#{31} "foo"] [#{0} ""] [#{31} "bar"] [#{0} ""]])))
 
 (t/deftest composing-colors
-  (let [red  (formatter {:fg :red})
-        blue (formatter {:fg :blue})]
+  (let [red  (color {:fg :red})
+        blue (color {:fg :blue})]
     (t/assert= (parse (red (blue "blue")))
                [[#{31} ""] [#{34} "blue"] [#{0} ""] [#{0} ""]]))
-  (let [red  (formatter {:fg :red})
-        blue (formatter {:fg :blue})]
+  (let [red  (color {:fg :red})
+        blue (color {:fg :blue})]
     (t/assert= (parse (red (blue "blue") "red" (blue "blue")))
                [[#{31} ""]
                     [#{34} "blue"] [#{0} ""]
@@ -79,6 +79,6 @@
                   [#{0} ""]])))
 
 (t/deftest errors-on-non-existent-values
-  (t/assert-throws? (formatter {:fg :rainbow}))
-  (t/assert-throws? (formatter {:bg :rainbow}))
-  (t/assert-throws? (formatter {:styles [:wahoo]})))
+  (t/assert-throws? (color {:fg :rainbow}))
+  (t/assert-throws? (color {:bg :rainbow}))
+  (t/assert-throws? (color {:styles [:wahoo]})))
