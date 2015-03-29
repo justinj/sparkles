@@ -13,14 +13,14 @@
         without-prefix (drop 2 chars)
         upto-m (apply str (take-while #(not (= \m %)) without-prefix))
         codes (set (map string->number (s/split upto-m ";")))]
-    codes
-    ))
+    codes))
 
-; gotta have at least one super low-level test, I guess.
+(def esc (char 27))
+
 (t/deftest explicit
   (let [red-fg (formatter {:fg :red})]
     (t/assert= (seq (red-fg "foo"))
-              [(char 27) \[ \3 \1 \m \f \o \o (char 27) \[ \0 \m] )))
+              [esc \[ \3 \1 \m \f \o \o esc \[ \0 \m])))
 
 (t/deftest single
   (let [red-fg (formatter {:fg :red})]
@@ -43,3 +43,42 @@
     (t/assert= (get-escape-codes (underline "foo")) #{4}))
   (let [underline-inverse (formatter {:styles [:underline :inverse]})]
     (t/assert= (get-escape-codes (underline-inverse "foo")) #{4 7})))
+
+(defn parse-elem [elem]
+  (let [without-prefix (rest elem)
+        upto-m (apply str (take-while #(not (= \m %)) without-prefix))
+        codes (set (map string->number (s/split upto-m ";")))
+        after-m (apply str (rest (drop-while #(not (= \m %)) without-prefix)))]
+    [codes after-m]))
+
+; kind of a weird parsing format but it's easy and maps closely to the text.
+; better format welcome though
+(defn parse [text]
+  (let [sections (s/split text (str (char 27)))]
+    (map parse-elem (rest sections))))
+
+(t/deftest concatenates-strs
+  (let [red (formatter {:fg :red})]
+    (t/assert= (parse (red "foo" "bar"))
+               [[#{31} "foo"] [#{0} ""] [#{31} "bar"] [#{0} ""]])))
+
+(t/deftest composing-colors
+  (let [red  (formatter {:fg :red})
+        blue (formatter {:fg :blue})]
+    (t/assert= (parse (red (blue "blue")))
+               [[#{31} ""] [#{34} "blue"] [#{0} ""] [#{0} ""]]))
+  (let [red  (formatter {:fg :red})
+        blue (formatter {:fg :blue})]
+    (t/assert= (parse (red (blue "blue") "red" (blue "blue")))
+               [[#{31} ""]
+                    [#{34} "blue"] [#{0} ""]
+                  [#{0} ""]
+                  [#{31} "red"] [#{0} ""]
+                  [#{31} ""]
+                    [#{34} "blue"] [#{0} ""]
+                  [#{0} ""]])))
+
+(t/deftest errors-on-non-existent-values
+  (t/assert-throws? (formatter {:fg :rainbow}))
+  (t/assert-throws? (formatter {:bg :rainbow}))
+  (t/assert-throws? (formatter {:styles [:wahoo]})))
