@@ -32,17 +32,6 @@
    :cyan    46
    :white   47})
 
-(deftype FormattedText [formatter contents]
-  ISeqable
-  (-seq [this] (seq (str this)))
-
-  INamed
-  (-name [this] (str this))
-
-  IObject
-  (-repr [this] (str this))
-  (-str [this] (apply str (map formatter contents))))
-
 (defn- get-codes [from codes key]
   (let [codes (if (satisfies? ISeqable codes) codes [codes])]
   (filter identity
@@ -60,4 +49,4 @@
         codes (concat style-codes fg-codes bg-codes)
         code-str (apply str (interpose ";" codes))
         formatter #(str (char 27) "[" code-str "m" % (char 27) "[0m")]
-    (fn [& text] (->FormattedText formatter text))))
+    (fn [& text] (apply str (map formatter text)))))
