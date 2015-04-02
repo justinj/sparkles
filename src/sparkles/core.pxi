@@ -50,3 +50,13 @@
         code-str (apply str (interpose ";" codes))
         formatter #(str (char 27) "[" code-str "m" % (char 27) "[0m")]
     (fn [& text] (apply str (map formatter text)))))
+
+(def red     (color {:fg :red}))
+(def black   (color {:fg :black}))
+(def red     (color {:fg :red}))
+(def green   (color {:fg :green}))
+(def yellow  (color {:fg :yellow}))
+(def blue    (color {:fg :blue}))
+(def magenta (color {:fg :magenta}))
+(def cyan    (color {:fg :cyan}))
+(def white   (color {:fg :white}))
