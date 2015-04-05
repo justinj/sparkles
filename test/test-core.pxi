@@ -1,7 +1,7 @@
 (ns sparkles.test
-  (use 'sparkles.core)
-  (require pixie.test :as t)
-  (require pixie.string :as s))
+  (:require [pixie.test :as t]
+            [pixie.string :as s]
+            [sparkles.core :as sparkles]))
 
 ; a little sketchy, but works
 (defn string->number [s]
@@ -18,30 +18,30 @@
 (def esc (char 27))
 
 (t/deftest explicit
-  (let [red-fg (color {:fg :red})]
+  (let [red-fg (sparkles/color {:fg :red})]
     (t/assert= (seq (red-fg "foo"))
               [esc \[ \3 \1 \m \f \o \o esc \[ \0 \m])))
 
 (t/deftest single
-  (let [red-fg (color {:fg :red})]
+  (let [red-fg (sparkles/color {:fg :red})]
     (t/assert= (get-escape-codes (red-fg "foo"))
                #{31}))
-  (let [blue-fg (color {:fg :blue})]
+  (let [blue-fg (sparkles/color {:fg :blue})]
     (t/assert= (get-escape-codes (blue-fg "foo"))
                #{34}))
-  (let [blue-bg (color {:bg :blue})]
+  (let [blue-bg (sparkles/color {:bg :blue})]
     (t/assert= (get-escape-codes (blue-bg "foo"))
                #{44})))
 
 (t/deftest multiple-codes
-  (let [fancy (color {:fg :red
+  (let [fancy (sparkles/color {:fg :red
                           :bg :blue})]
     (t/assert= (get-escape-codes (fancy "foo")) #{31 44})))
 
 (t/deftest styles
-  (let [underline (color {:styles [:underline]})]
+  (let [underline (sparkles/color {:styles [:underline]})]
     (t/assert= (get-escape-codes (underline "foo")) #{4}))
-  (let [underline-inverse (color {:styles [:underline :inverse]})]
+  (let [underline-inverse (sparkles/color {:styles [:underline :inverse]})]
     (t/assert= (get-escape-codes (underline-inverse "foo")) #{4 7})))
 
 (defn parse-elem [elem]
@@ -58,17 +58,17 @@
     (map parse-elem (rest sections))))
 
 (t/deftest concatenates-strs
-  (let [red (color {:fg :red})]
+  (let [red (sparkles/color {:fg :red})]
     (t/assert= (parse (red "foo" "bar"))
                [[#{31} "foo"] [#{0} ""] [#{31} "bar"] [#{0} ""]])))
 
 (t/deftest composing-colors
-  (let [red  (color {:fg :red})
-        blue (color {:fg :blue})]
+  (let [red  (sparkles/color {:fg :red})
+        blue (sparkles/color {:fg :blue})]
     (t/assert= (parse (red (blue "blue")))
                [[#{31} ""] [#{34} "blue"] [#{0} ""] [#{0} ""]]))
-  (let [red  (color {:fg :red})
-        blue (color {:fg :blue})]
+  (let [red  (sparkles/color {:fg :red})
+        blue (sparkles/color {:fg :blue})]
     (t/assert= (parse (red (blue "blue") "red" (blue "blue")))
                [[#{31} ""]
                     [#{34} "blue"] [#{0} ""]
@@ -79,6 +79,6 @@
                   [#{0} ""]])))
 
 (t/deftest errors-on-non-existent-values
-  (t/assert-throws? (color {:fg :rainbow}))
-  (t/assert-throws? (color {:bg :rainbow}))
-  (t/assert-throws? (color {:styles [:wahoo]})))
+  (t/assert-throws? (sparkles/color {:fg :rainbow}))
+  (t/assert-throws? (sparkles/color {:bg :rainbow}))
+  (t/assert-throws? (sparkles/color {:styles [:wahoo]})))
