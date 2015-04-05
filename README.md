@@ -1,6 +1,8 @@
 Sparkles
 ========
 
+<img src="images/logo.png">
+
 A library for formatting text in a terminal.
 Only color for now.
 
