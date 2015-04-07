@@ -24,3 +24,12 @@ Usage
 gives
 
 <img src="images/example.png">
+
+Colors compose properly:
+
+```
+(println (blue "hello" (red " hi ") "hello"))
+```
+works as you would expect.
+
+The foreground colors are all pre-defined, take a look at `src/sparkles/core.pxi`, it's pretty straightforward.
