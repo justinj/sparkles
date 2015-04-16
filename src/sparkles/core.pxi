@@ -42,6 +42,8 @@
                codes))))
 
 (defn color [formatting]
+  "Create a formatter that takes a variable number of stringable arguments and
+  formats them according to the :fg, :bg, and :styles codes."
   (let [{:keys [fg bg styles]} formatting
         fg-codes    (get-codes fg-color-codes [fg] :fg)
         bg-codes    (get-codes bg-color-codes [bg] :bg)
